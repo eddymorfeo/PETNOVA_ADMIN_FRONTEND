@@ -55,13 +55,6 @@ export default function LoginPage() {
           </div>
 
           <div className="relative hidden min-h-full lg:block">
-            <Image
-              src="/images/admin-login-vet.jpg"
-              alt="Entorno administrativo veterinario"
-              fill
-              priority
-              className="object-cover"
-            />
 
             <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(2,6,23,0.82)_0%,rgba(15,23,42,0.55)_40%,rgba(5,150,105,0.30)_100%)]" />
 
