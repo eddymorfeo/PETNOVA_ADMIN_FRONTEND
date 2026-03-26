@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { useAuth } from "@/hooks/auth/use-auth";
 import { getRequiredPermissions } from "@/lib/auth/route-permissions";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export default function PrivateLayout({
   children,
@@ -46,9 +47,13 @@ export default function PrivateLayout({
   if (!isAuthenticated) return null;
 
   return (
-    <main className="flex min-h-screen bg-[radial-gradient(circle_at_top,#f5fbf8_0%,#edf5f2_42%,#e8eff1_100%)]">
+    <main>
+    <SidebarProvider>
       <AppSidebar />
-      <section className="flex-1 p-6">{children}</section>
+      <SidebarInset>
+        {children}
+      </SidebarInset>
+    </SidebarProvider>
     </main>
   );
 }

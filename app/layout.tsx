@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PETNOVA Admin",
+  title: "PETNOVA ADMIN",
   description: "Portal administrativo de PETNOVA",
 };
 

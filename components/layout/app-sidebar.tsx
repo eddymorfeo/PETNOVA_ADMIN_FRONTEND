@@ -1,89 +1,175 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, PawPrint, CalendarDays, FileText } from "lucide-react";
+import * as React from "react"
+import {
+  AudioWaveform,
+  BookOpen,
+  Bot,
+  Command,
+  Frame,
+  GalleryVerticalEnd,
+  Map,
+  PieChart,
+  Settings2,
+  SquareTerminal,
+} from "lucide-react"
 
-import { cn } from "@/lib/utils";
-import { useAuth } from "@/hooks/auth/use-auth";
-import { NavUser } from "@/components/layout/nav-user";
+import { NavMain } from "@/components/layout/nav-main"
+import { NavProjects } from "@/components/layout/nav-projects"
+import { NavUser } from "@/components/layout/nav-user"
+import { TeamSwitcher } from "@/components/layout/team-switcher"
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarRail,
+} from "@/components/ui/sidebar"
 
-const sidebarItems = [
-  {
-    title: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
+// This is sample data.
+const data = {
+  user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
   },
-  {
-    title: "Usuarios",
-    href: "/users",
-    icon: Users,
-    requiredPermissions: ["USERS_VIEW"],
-  },
-  {
-    title: "Mascotas",
-    href: "/pets",
-    icon: PawPrint,
-    requiredPermissions: ["PETS_VIEW"],
-  },
-  {
-    title: "Citas",
-    href: "/appointments",
-    icon: CalendarDays,
-    requiredPermissions: ["APPOINTMENTS_VIEW"],
-  },
-  {
-    title: "Fichas clínicas",
-    href: "/medical-records",
-    icon: FileText,
-    requiredPermissions: ["CONSULTATIONS_VIEW"],
-  },
-];
+  teams: [
+    {
+      name: "Acme Inc",
+      logo: GalleryVerticalEnd,
+      plan: "Enterprise",
+    },
+    {
+      name: "Acme Corp.",
+      logo: AudioWaveform,
+      plan: "Startup",
+    },
+    {
+      name: "Evil Corp.",
+      logo: Command,
+      plan: "Free",
+    },
+  ],
+  navMain: [
+    {
+      title: "Playground",
+      url: "#",
+      icon: SquareTerminal,
+      isActive: true,
+      items: [
+        {
+          title: "History",
+          url: "#",
+        },
+        {
+          title: "Starred",
+          url: "#",
+        },
+        {
+          title: "Settings",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Models",
+      url: "#",
+      icon: Bot,
+      items: [
+        {
+          title: "Genesis",
+          url: "#",
+        },
+        {
+          title: "Explorer",
+          url: "#",
+        },
+        {
+          title: "Quantum",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Documentation",
+      url: "#",
+      icon: BookOpen,
+      items: [
+        {
+          title: "Introduction",
+          url: "#",
+        },
+        {
+          title: "Get Started",
+          url: "#",
+        },
+        {
+          title: "Tutorials",
+          url: "#",
+        },
+        {
+          title: "Changelog",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Settings",
+      url: "#",
+      icon: Settings2,
+      items: [
+        {
+          title: "General",
+          url: "#",
+        },
+        {
+          title: "Team",
+          url: "#",
+        },
+        {
+          title: "Billing",
+          url: "#",
+        },
+        {
+          title: "Limits",
+          url: "#",
+        },
+      ],
+    },
+  ],
+  projects: [
+    {
+      name: "Design Engineering",
+      url: "#",
+      icon: Frame,
+    },
+    {
+      name: "Sales & Marketing",
+      url: "#",
+      icon: PieChart,
+    },
+    {
+      name: "Travel",
+      url: "#",
+      icon: Map,
+    },
+  ],
+}
 
-export function AppSidebar() {
-  const pathname = usePathname();
-  const { hasAnyPermission } = useAuth();
-
-  const visibleItems = sidebarItems.filter((item) => {
-    if (!item.requiredPermissions) return true;
-    return hasAnyPermission(item.requiredPermissions);
-  });
-
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <aside className="flex h-full w-[280px] shrink-0 flex-col border-r border-slate-200 bg-white/90 px-4 py-5 backdrop-blur">
-      <div className="mb-6 px-2">
-        <p className="text-xs font-medium uppercase tracking-[0.24em] text-slate-400">
-          PETNOVA
-        </p>
-        <h2 className="mt-1 text-lg font-semibold text-slate-900">
-          Portal administrativo
-        </h2>
-      </div>
-
-      <nav className="flex-1 space-y-2">
-        {visibleItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href;
-
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium transition",
-                isActive
-                  ? "bg-slate-950 text-white shadow-lg shadow-slate-950/15"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              )}
-            >
-              <Icon className="size-4" />
-              <span>{item.title}</span>
-            </Link>
-          );
-        })}
-      </nav>
-
-      <NavUser />
-    </aside>
-  );
+    <Sidebar collapsible="icon" {...props}>
+      <SidebarHeader>
+        <TeamSwitcher teams={data.teams} />
+      </SidebarHeader>
+      <SidebarContent>
+        <NavMain items={data.navMain} />
+        <NavProjects projects={data.projects} />
+      </SidebarContent>
+      <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
+  )
 }
