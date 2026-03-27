@@ -1,12 +1,16 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { AppSidebar } from "@/components/layout/app-sidebar";
-import { useAuth } from "@/hooks/auth/use-auth";
-import { getRequiredPermissions } from "@/lib/auth/route-permissions";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import {
+  getAdminSessionFromStorage,
+  getPrimaryRoleCode,
+} from "@/lib/auth/admin-session";
+import { canAccessPath } from "@/lib/auth/admin-access.utils";
+import type { AdminSession } from "@/types/auth/admin-session";
 
 export default function PrivateLayout({
   children,
@@ -15,28 +19,32 @@ export default function PrivateLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { isAuthenticated, isLoading, hasAnyPermission } = useAuth();
+
+  const [session, setSession] = useState<AdminSession | null>(null);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    if (isLoading) return;
+    const storedSession = getAdminSessionFromStorage();
+    setSession(storedSession);
+    setIsReady(true);
+  }, []);
 
-    if (!isAuthenticated) {
+  const roleCode = useMemo(() => getPrimaryRoleCode(session), [session]);
+
+  useEffect(() => {
+    if (!isReady) return;
+
+    if (!session) {
       router.replace("/auth/login");
       return;
     }
 
-    const requiredPermissions = getRequiredPermissions(pathname);
-
-    if (
-      requiredPermissions &&
-      requiredPermissions.length > 0 &&
-      !hasAnyPermission(requiredPermissions)
-    ) {
+    if (!canAccessPath(roleCode, pathname)) {
       router.replace("/dashboard");
     }
-  }, [isAuthenticated, isLoading, pathname, router, hasAnyPermission]);
+  }, [isReady, pathname, roleCode, router, session]);
 
-  if (isLoading) {
+  if (!isReady) {
     return (
       <main className="grid min-h-screen place-items-center bg-slate-50">
         <p className="text-sm text-slate-500">Cargando sesión...</p>
@@ -44,16 +52,12 @@ export default function PrivateLayout({
     );
   }
 
-  if (!isAuthenticated) return null;
+  if (!session) return null;
 
   return (
-    <main>
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
-        {children}
-      </SidebarInset>
+      <SidebarInset>{children}</SidebarInset>
     </SidebarProvider>
-    </main>
   );
 }
