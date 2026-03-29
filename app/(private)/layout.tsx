@@ -11,6 +11,7 @@ import {
 } from "@/lib/auth/admin-session";
 import { canAccessPath } from "@/lib/auth/admin-access.utils";
 import type { AdminSession } from "@/types/auth/admin-session";
+import { PrivateTopbar } from "@/components/layout/private-topbar";
 
 export default function PrivateLayout({
   children,
@@ -57,7 +58,14 @@ export default function PrivateLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>{children}</SidebarInset>
+
+      <SidebarInset className="bg-slate-50">
+        <PrivateTopbar />
+
+        <main className="flex min-h-[calc(100vh-4rem)] flex-1 flex-col overflow-hidden">
+          {children}
+        </main>
+      </SidebarInset>
     </SidebarProvider>
   );
 }
