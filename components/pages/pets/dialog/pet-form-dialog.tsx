@@ -61,6 +61,8 @@ type PetFormDialogProps = {
   onUpdate: (petId: string, values: UpdatePetPayload) => Promise<void>;
 };
 
+const EMPTY_OPTION_VALUE = "__empty__";
+
 const defaultValues: PetFormValues = {
   clientId: "",
   clientLabel: "",
@@ -116,12 +118,31 @@ export function PetFormDialog({
   const selectedSpeciesId = form.watch("speciesId");
 
   useEffect(() => {
-    if (!selectedSpeciesId) return;
+    if (!selectedSpeciesId) {
+      form.setValue("breedId", "", {
+        shouldDirty: true,
+        shouldTouch: true,
+      });
+      return;
+    }
+
     void onSpeciesChange(selectedSpeciesId);
-  }, [onSpeciesChange, selectedSpeciesId]);
+  }, [form, onSpeciesChange, selectedSpeciesId]);
+
+  const filteredBreedOptions = useMemo(() => {
+    if (!selectedSpeciesId) {
+      return [];
+    }
+
+    return breedOptions.filter((breed) => breed.species_id === selectedSpeciesId);
+  }, [breedOptions, selectedSpeciesId]);
 
   const handleSelectClient = (client: PetClientOption) => {
-    form.setValue("clientId", client.id, { shouldDirty: true, shouldTouch: true });
+    form.setValue("clientId", client.id, {
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+
     form.setValue("clientLabel", buildClientLabel(client), {
       shouldDirty: true,
       shouldTouch: true,
@@ -142,8 +163,6 @@ export function PetFormDialog({
   });
 
   const errors = form.formState.errors;
-
-  const breedSelectItems = useMemo(() => breedOptions, [breedOptions]);
 
   return (
     <>
@@ -174,6 +193,7 @@ export function PetFormDialog({
                     value={form.watch("clientLabel")}
                     readOnly
                     placeholder="Selecciona un cliente"
+                    className="flex-1"
                   />
                   <Button
                     type="button"
@@ -196,7 +216,7 @@ export function PetFormDialog({
                   <span>Nombre de la mascota</span>
                   <RequiredMark />
                 </Label>
-                <Input id="name" {...form.register("name")} />
+                <Input id="name" {...form.register("name")} className="w-full" />
                 {errors.name && (
                   <p className="text-sm text-red-500">{errors.name.message}</p>
                 )}
@@ -208,22 +228,31 @@ export function PetFormDialog({
                   <RequiredMark />
                 </Label>
                 <Select
-                  value={form.watch("speciesId")}
+                  value={form.watch("speciesId") || EMPTY_OPTION_VALUE}
                   onValueChange={(value) => {
-                    form.setValue("speciesId", value, {
+                    const normalizedValue =
+                      value === EMPTY_OPTION_VALUE ? "" : value;
+
+                    form.setValue("speciesId", normalizedValue, {
                       shouldDirty: true,
                       shouldTouch: true,
                     });
+
                     form.setValue("breedId", "", {
                       shouldDirty: true,
                       shouldTouch: true,
                     });
                   }}
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar especie" />
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Seleccionar una opción" />
                   </SelectTrigger>
+
                   <SelectContent>
+                    <SelectItem value={EMPTY_OPTION_VALUE}>
+                      Seleccionar una opción
+                    </SelectItem>
+
                     {speciesOptions.map((species) => (
                       <SelectItem key={species.id} value={species.id}>
                         {species.name}
@@ -231,6 +260,7 @@ export function PetFormDialog({
                     ))}
                   </SelectContent>
                 </Select>
+
                 {errors.speciesId && (
                   <p className="text-sm text-red-500">{errors.speciesId.message}</p>
                 )}
@@ -239,19 +269,34 @@ export function PetFormDialog({
               <div className="space-y-2">
                 <Label>Raza</Label>
                 <Select
-                  value={form.watch("breedId")}
+                  value={form.watch("breedId") || EMPTY_OPTION_VALUE}
                   onValueChange={(value) => {
-                    form.setValue("breedId", value, {
+                    const normalizedValue =
+                      value === EMPTY_OPTION_VALUE ? "" : value;
+
+                    form.setValue("breedId", normalizedValue, {
                       shouldDirty: true,
                       shouldTouch: true,
                     });
                   }}
+                  disabled={!selectedSpeciesId}
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar raza" />
+                  <SelectTrigger className="w-full">
+                    <SelectValue
+                      placeholder={
+                        selectedSpeciesId
+                          ? "Seleccionar una opción"
+                          : "Selecciona primero una especie"
+                      }
+                    />
                   </SelectTrigger>
+
                   <SelectContent>
-                    {breedSelectItems.map((breed) => (
+                    <SelectItem value={EMPTY_OPTION_VALUE}>
+                      Seleccionar una opción
+                    </SelectItem>
+
+                    {filteredBreedOptions.map((breed) => (
                       <SelectItem key={breed.id} value={breed.id}>
                         {breed.name}
                       </SelectItem>
@@ -266,22 +311,30 @@ export function PetFormDialog({
                   <RequiredMark />
                 </Label>
                 <Select
-                  value={form.watch("sex")}
+                  value={form.watch("sex") || EMPTY_OPTION_VALUE}
                   onValueChange={(value) => {
-                    form.setValue("sex", value, {
+                    const normalizedValue =
+                      value === EMPTY_OPTION_VALUE ? "" : value;
+
+                    form.setValue("sex", normalizedValue, {
                       shouldDirty: true,
                       shouldTouch: true,
                     });
                   }}
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar sexo" />
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Seleccionar una opción" />
                   </SelectTrigger>
+
                   <SelectContent>
+                    <SelectItem value={EMPTY_OPTION_VALUE}>
+                      Seleccionar una opción
+                    </SelectItem>
                     <SelectItem value="MACHO">Macho</SelectItem>
                     <SelectItem value="HEMBRA">Hembra</SelectItem>
                   </SelectContent>
                 </Select>
+
                 {errors.sex && (
                   <p className="text-sm text-red-500">{errors.sex.message}</p>
                 )}
@@ -292,7 +345,12 @@ export function PetFormDialog({
                   <span>Fecha de nacimiento</span>
                   <RequiredMark />
                 </Label>
-                <Input id="birthDate" type="date" {...form.register("birthDate")} />
+                <Input
+                  id="birthDate"
+                  type="date"
+                  {...form.register("birthDate")}
+                  className="w-full"
+                />
                 {errors.birthDate && (
                   <p className="text-sm text-red-500">
                     {errors.birthDate.message}
@@ -302,12 +360,16 @@ export function PetFormDialog({
 
               <div className="space-y-2">
                 <Label htmlFor="color">Color</Label>
-                <Input id="color" {...form.register("color")} />
+                <Input id="color" {...form.register("color")} className="w-full" />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="microchip">Microchip</Label>
-                <Input id="microchip" {...form.register("microchip")} />
+                <Input
+                  id="microchip"
+                  {...form.register("microchip")}
+                  className="w-full"
+                />
               </div>
 
               <div className="space-y-2 md:col-span-2">
@@ -362,7 +424,11 @@ export function PetFormDialog({
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
                 Cancelar
               </Button>
 

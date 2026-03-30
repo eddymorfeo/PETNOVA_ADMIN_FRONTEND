@@ -54,17 +54,17 @@ export async function deletePet(petId: string): Promise<PetItem> {
   return response.data;
 }
 
-export async function searchClients(query: string): Promise<PetClientOption[]> {
-  const response = await apiClient<ClientSearchResponse>(
-    `/clients/search?query=${encodeURIComponent(query)}`,
-    {
-      method: "GET",
-      auth: true,
-    },
-  );
+// export async function searchClients(query: string): Promise<PetClientOption[]> {
+//   const response = await apiClient<ClientSearchResponse>(
+//     `/clients/search?query=${encodeURIComponent(query)}`,
+//     {
+//       method: "GET",
+//       auth: true,
+//     },
+//   );
 
-  return response.data;
-}
+//   return response.data;
+// }
 
 export async function fetchSpecies(): Promise<SpeciesOption[]> {
   const response = await apiClient<SpeciesListResponse>("/species", {

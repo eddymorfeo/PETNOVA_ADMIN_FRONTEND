@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
 
+import { fetchClients } from "@/api/clients/clients.api";
 import {
   createPet,
   deletePet,
@@ -13,26 +14,100 @@ import {
   updatePet,
 } from "@/api/pets/pets.api";
 
+import type { ClientItem } from "@/types/clients/client.type";
 import type {
   BreedOption,
   CreatePetPayload,
+  PetClientOption,
   PetItem,
   SpeciesOption,
   UpdatePetPayload,
 } from "@/types/pets/pet.type";
 
+function mapClientToPetClient(client: ClientItem): PetClientOption {
+  return {
+    id: client.id,
+    full_name: client.full_name,
+    document_id: client.document_id ?? null,
+    email: client.email,
+    phone: client.phone ?? null,
+    is_active: client.is_active,
+  };
+}
+
+function enrichPetsWithRelations(
+  pets: PetItem[],
+  clients: ClientItem[],
+  speciesOptions: SpeciesOption[],
+  breedOptions: BreedOption[],
+): PetItem[] {
+  const clientMap = new Map(
+    clients.map((client) => [client.id, mapClientToPetClient(client)]),
+  );
+
+  const speciesMap = new Map(
+    speciesOptions.map((species) => [species.id, species]),
+  );
+
+  const breedMap = new Map(
+    breedOptions.map((breed) => [breed.id, breed]),
+  );
+
+  return pets.map((pet) => ({
+    ...pet,
+    client: clientMap.get(pet.client_id) ?? null,
+    species: speciesMap.get(pet.species_id) ?? null,
+    breed: pet.breed_id ? breedMap.get(pet.breed_id) ?? null : null,
+  }));
+}
+
 export function usePets() {
   const [pets, setPets] = useState<PetItem[]>([]);
   const [speciesOptions, setSpeciesOptions] = useState<SpeciesOption[]>([]);
   const [breedOptions, setBreedOptions] = useState<BreedOption[]>([]);
+  const [allBreedOptions, setAllBreedOptions] = useState<BreedOption[]>([]);
+  const [clients, setClients] = useState<ClientItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isMutating, setIsMutating] = useState(false);
+
+  const loadSpecies = useCallback(async (): Promise<SpeciesOption[]> => {
+    const response = await fetchSpecies();
+    setSpeciesOptions(response);
+    return response;
+  }, []);
+
+  const loadAllBreeds = useCallback(async (): Promise<BreedOption[]> => {
+    const response = await fetchBreeds();
+    setAllBreedOptions(response);
+    return response;
+  }, []);
+
+  const loadClients = useCallback(async (): Promise<ClientItem[]> => {
+    const response = await fetchClients();
+    setClients(response);
+    return response;
+  }, []);
 
   const loadPets = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await fetchPets();
-      setPets(response);
+
+      const [petsResponse, clientsResponse, speciesResponse, breedsResponse] =
+        await Promise.all([
+          fetchPets(),
+          loadClients(),
+          loadSpecies(),
+          loadAllBreeds(),
+        ]);
+
+      setPets(
+        enrichPetsWithRelations(
+          petsResponse,
+          clientsResponse,
+          speciesResponse,
+          breedsResponse,
+        ),
+      );
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "No fue posible cargar las mascotas.";
@@ -43,21 +118,7 @@ export function usePets() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
-
-  const loadSpecies = useCallback(async () => {
-    try {
-      const response = await fetchSpecies();
-      setSpeciesOptions(response);
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "No fue posible cargar las especies.";
-
-      toast.error("No se pudieron cargar las especies", {
-        description: message,
-      });
-    }
-  }, []);
+  }, [loadAllBreeds, loadClients, loadSpecies]);
 
   const loadBreeds = useCallback(async (speciesId?: string) => {
     try {
@@ -75,21 +136,27 @@ export function usePets() {
 
   useEffect(() => {
     void loadPets();
-    void loadSpecies();
-  }, [loadPets, loadSpecies]);
+  }, [loadPets]);
+
+  const refreshPets = useCallback(async () => {
+    const petsResponse = await fetchPets();
+    setPets(
+      enrichPetsWithRelations(
+        petsResponse,
+        clients,
+        speciesOptions,
+        allBreedOptions,
+      ),
+    );
+  }, [allBreedOptions, clients, speciesOptions]);
 
   const handleCreatePet = useCallback(async (payload: CreatePetPayload) => {
     try {
       setIsMutating(true);
-      const createdPet = await createPet(payload);
+      await createPet(payload);
+      await refreshPets();
 
-      setPets((currentPets) => [createdPet, ...currentPets]);
-
-      toast.success("Mascota creada correctamente", {
-        description: `Se registró a ${createdPet.name}.`,
-      });
-
-      return createdPet;
+      toast.success("Mascota creada correctamente");
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "No fue posible crear la mascota.";
@@ -105,22 +172,15 @@ export function usePets() {
     } finally {
       setIsMutating(false);
     }
-  }, []);
+  }, [refreshPets]);
 
   const handleUpdatePet = useCallback(async (petId: string, payload: UpdatePetPayload) => {
     try {
       setIsMutating(true);
-      const updatedPet = await updatePet(petId, payload);
+      await updatePet(petId, payload);
+      await refreshPets();
 
-      setPets((currentPets) =>
-        currentPets.map((pet) => (pet.id === petId ? updatedPet : pet)),
-      );
-
-      toast.success("Mascota actualizada", {
-        description: `Se actualizó ${updatedPet.name}.`,
-      });
-
-      return updatedPet;
+      toast.success("Mascota actualizada");
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "No fue posible actualizar la mascota.";
@@ -136,7 +196,7 @@ export function usePets() {
     } finally {
       setIsMutating(false);
     }
-  }, []);
+  }, [refreshPets]);
 
   const handleDeletePet = useCallback(async (pet: PetItem) => {
     const result = await Swal.fire({
@@ -157,17 +217,10 @@ export function usePets() {
 
     try {
       setIsMutating(true);
-      const deletedPet = await deletePet(pet.id);
+      await deletePet(pet.id);
+      await refreshPets();
 
-      setPets((currentPets) =>
-        currentPets.map((currentPet) =>
-          currentPet.id === pet.id ? deletedPet : currentPet,
-        ),
-      );
-
-      toast.success("Mascota desactivada", {
-        description: `${deletedPet.name} fue desactivada correctamente.`,
-      });
+      toast.success("Mascota desactivada");
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "No fue posible desactivar la mascota.";
@@ -181,7 +234,7 @@ export function usePets() {
     } finally {
       setIsMutating(false);
     }
-  }, []);
+  }, [refreshPets]);
 
   const activePetsCount = useMemo(
     () => pets.filter((pet) => pet.is_active).length,

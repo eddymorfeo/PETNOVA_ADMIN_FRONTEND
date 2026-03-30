@@ -9,6 +9,8 @@ export type PetClientOption = {
   full_name: string;
   document_id: string | null;
   email: string;
+  phone: string | null;
+  is_active: boolean;
 };
 
 export type SpeciesOption = {
@@ -28,9 +30,16 @@ export type PetItem = {
   client?: PetClientOption | null;
   name: string;
   species_id: string;
-  species?: SpeciesOption | null;
+  species?: {
+    id: string;
+    name: string;
+  } | null;
   breed_id: string | null;
-  breed?: BreedOption | null;
+  breed?: {
+    id: string;
+    name: string;
+    species_id: string;
+  } | null;
   sex: string | null;
   birth_date: string | null;
   color: string | null;
