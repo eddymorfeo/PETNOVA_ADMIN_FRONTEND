@@ -4,7 +4,14 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -27,7 +34,9 @@ type UserFormDialogProps = {
   user?: UserItem | null;
   isSubmitting: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreate: (values: ReturnType<typeof mapCreateFormToPayload>) => Promise<void>;
+  onCreate: (
+    values: ReturnType<typeof mapCreateFormToPayload>,
+  ) => Promise<void>;
   onUpdate: (
     userId: string,
     values: ReturnType<typeof mapUpdateFormToPayload>,
@@ -107,15 +116,21 @@ export function UserFormDialog({
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">
+                Username<span className="text-red-500">*</span>
+              </Label>
               <Input id="username" {...form.register("username")} />
               {errors.username && (
-                <p className="text-sm text-red-500">{errors.username.message}</p>
+                <p className="text-sm text-red-500">
+                  {errors.username.message}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Correo electrónico</Label>
+              <Label htmlFor="email">
+                Correo electrónico<span className="text-red-500">*</span>
+              </Label>
               <Input id="email" type="email" {...form.register("email")} />
               {errors.email && (
                 <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -123,10 +138,12 @@ export function UserFormDialog({
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="fullName">Nombre completo</Label>
+              <Label htmlFor="fullName">Nombre completo<span className="text-red-500">*</span></Label>
               <Input id="fullName" {...form.register("fullName")} />
               {errors.fullName && (
-                <p className="text-sm text-red-500">{errors.fullName.message}</p>
+                <p className="text-sm text-red-500">
+                  {errors.fullName.message}
+                </p>
               )}
             </div>
 
@@ -139,19 +156,30 @@ export function UserFormDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">
-                {mode === "create" ? "Contraseña" : "Nueva contraseña"}
+              <Label htmlFor="password" className="flex items-center gap-1">
+                <span>
+                  {mode === "create" ? "Contraseña" : "Nueva contraseña"}
+                </span>
+                {mode === "create" && <span className="text-red-500">*</span>}
               </Label>
-              <Input id="password" type="password" {...form.register("password")} />
+              <Input
+                id="password"
+                type="password"
+                {...form.register("password")}
+              />
               {errors.password && (
-                <p className="text-sm text-red-500">{errors.password.message}</p>
+                <p className="text-sm text-red-500">
+                  {errors.password.message}
+                </p>
               )}
             </div>
           </div>
 
           <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
             <div>
-              <p className="text-sm font-medium text-slate-900">Estado del usuario</p>
+              <p className="text-sm font-medium text-slate-900">
+                Estado del usuario
+              </p>
               <p className="text-xs text-slate-500">
                 Define si el usuario puede operar en el sistema.
               </p>
@@ -164,7 +192,11 @@ export function UserFormDialog({
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Cancelar
             </Button>
 
