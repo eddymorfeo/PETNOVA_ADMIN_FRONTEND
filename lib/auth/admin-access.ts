@@ -99,7 +99,7 @@ export const adminAccessConfig: RoleSidebarConfig[] = [
           {
             key: "manage-consultations",
             title: "Gestionar fichas clínicas",
-            path: "/consultations",
+            path: "/medical-records",
             permissions: { view: true },
           },
         ],
