@@ -23,8 +23,18 @@ export interface RoleSidebarConfig {
   menus: SidebarMenuConfigItem[];
 }
 
+const accountMenuItem: SidebarMenuConfigItem = {
+  key: "account",
+  title: "Mi cuenta",
+  path: "/account",
+  icon: "UserCircle2",
+  permissions: {
+    view: true,
+    update: true,
+  },
+};
+
 export const adminAccessConfig: RoleSidebarConfig[] = [
-  //ADMIN
   {
     role: "ADMIN",
     menus: [
@@ -112,37 +122,97 @@ export const adminAccessConfig: RoleSidebarConfig[] = [
         permissions: { view: true },
         children: [
           {
-            key: "settings-user-roles",
-            title: "Asignar roles",
-            path: "/settings/user-role",
+            key: "settings-general",
+            title: "Configuración general",
+            path: "/settings",
             permissions: { view: true, update: true },
           },
           {
-            key: "settings-veterinarias",
-            title: "Asignar veterinarios",
-            path: "/settings/veterinarians",
-            permissions: { view: true, update: true },
+            key: "settings-user-roles",
+            title: "Asignar roles",
+            path: "/users/roles",
+            permissions: { view: true, create: true, update: true, delete: true },
           },
-                    {
+          {
+            key: "settings-veterinarians",
+            title: "Asignar veterinarios",
+            path: "/veterinarians",
+            permissions: { view: true, create: true, update: true, delete: true },
+          },
+          {
             key: "settings-working-hours",
             title: "Asignar horarios",
-            path: "/settings/working-hours",
-            permissions: { view: true, update: true },
+            path: "/working-hours",
+            permissions: { view: true, create: true, update: true, delete: true },
           },
-                              {
+          {
             key: "settings-time-off",
             title: "Asignar días libres",
-            path: "/settings/time-off",
-            permissions: { view: true, update: true },
+            path: "/time-off",
+            permissions: { view: true, create: true, update: true, delete: true },
           },
         ],
       },
+      accountMenuItem,
     ],
   },
-
-  //RECEPCION
   {
     role: "RECEPCION",
+    menus: [
+      {
+        key: "dashboard",
+        title: "Dashboard",
+        path: "/dashboard",
+        icon: "LayoutDashboard",
+        permissions: { view: true },
+      },
+      {
+        key: "clients",
+        title: "Clientes",
+        icon: "UserRound",
+        permissions: { view: true },
+        children: [
+          {
+            key: "manage-clients",
+            title: "Gestionar clientes",
+            path: "/clients",
+            permissions: { view: true },
+          },
+        ],
+      },
+      {
+        key: "pets",
+        title: "Mascotas",
+        icon: "PawPrint",
+        permissions: { view: true },
+        children: [
+          {
+            key: "manage-pets",
+            title: "Gestionar mascotas",
+            path: "/pets",
+            permissions: { view: true },
+          },
+        ],
+      },
+      {
+        key: "appointments",
+        title: "Citas",
+        icon: "CalendarDays",
+        permissions: { view: true },
+        children: [
+          {
+            key: "manage-appointments",
+            title: "Gestionar citas",
+            path: "/appointments",
+            permissions: { view: true },
+          },
+        ],
+      },
+      accountMenuItem,
+    ],
+  },
+  {
+    role: "VETERINARIO",
     menus: [
       {
         key: "dashboard",
@@ -207,12 +277,11 @@ export const adminAccessConfig: RoleSidebarConfig[] = [
           },
         ],
       },
+      accountMenuItem,
     ],
   },
-
-  //VETERINARIO
   {
-    role: "VETERINARIO",
+    role: "ANALYST",
     menus: [
       {
         key: "dashboard",
@@ -221,20 +290,7 @@ export const adminAccessConfig: RoleSidebarConfig[] = [
         icon: "LayoutDashboard",
         permissions: { view: true },
       },
-      {
-        key: "medical-records",
-        title: "Fichas clínicas",
-        icon: "FileText",
-        permissions: { view: true },
-        children: [
-          {
-            key: "manage-medical-records",
-            title: "Gestionar fichas clínicas",
-            path: "/medical-records",
-            permissions: { view: true },
-          },
-        ],
-      },
+      accountMenuItem,
     ],
   },
 ];
