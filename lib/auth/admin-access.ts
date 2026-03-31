@@ -24,6 +24,7 @@ export interface RoleSidebarConfig {
 }
 
 export const adminAccessConfig: RoleSidebarConfig[] = [
+  //ADMIN
   {
     role: "ADMIN",
     menus: [
@@ -138,6 +139,8 @@ export const adminAccessConfig: RoleSidebarConfig[] = [
       },
     ],
   },
+
+  //RECEPCION
   {
     role: "RECEPCION",
     menus: [
@@ -206,6 +209,8 @@ export const adminAccessConfig: RoleSidebarConfig[] = [
       },
     ],
   },
+
+  //VETERINARIO
   {
     role: "VETERINARIO",
     menus: [
@@ -215,48 +220,6 @@ export const adminAccessConfig: RoleSidebarConfig[] = [
         path: "/dashboard",
         icon: "LayoutDashboard",
         permissions: { view: true },
-      },
-      {
-        key: "clients",
-        title: "Clientes",
-        icon: "UserRound",
-        permissions: { view: true },
-        children: [
-          {
-            key: "manage-clients",
-            title: "Gestionar clientes",
-            path: "/clients",
-            permissions: { view: true },
-          },
-        ],
-      },
-      {
-        key: "pets",
-        title: "Mascotas",
-        icon: "PawPrint",
-        permissions: { view: true },
-        children: [
-          {
-            key: "manage-pets",
-            title: "Gestionar mascotas",
-            path: "/pets",
-            permissions: { view: true },
-          },
-        ],
-      },
-      {
-        key: "appointments",
-        title: "Citas",
-        icon: "CalendarDays",
-        permissions: { view: true },
-        children: [
-          {
-            key: "manage-appointments",
-            title: "Gestionar citas",
-            path: "/appointments",
-            permissions: { view: true },
-          },
-        ],
       },
       {
         key: "medical-records",
