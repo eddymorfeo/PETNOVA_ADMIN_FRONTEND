@@ -91,13 +91,13 @@ export const adminAccessConfig: RoleSidebarConfig[] = [
         ],
       },
       {
-        key: "consultations",
+        key: "medical-records",
         title: "Fichas clínicas",
         icon: "FileText",
         permissions: { view: true },
         children: [
           {
-            key: "manage-consultations",
+            key: "manage-medical-records",
             title: "Gestionar fichas clínicas",
             path: "/medical-records",
             permissions: { view: true },
@@ -111,9 +111,27 @@ export const adminAccessConfig: RoleSidebarConfig[] = [
         permissions: { view: true },
         children: [
           {
-            key: "settings-general",
-            title: "Configuración general",
-            path: "/settings",
+            key: "settings-user-roles",
+            title: "Asignar roles",
+            path: "/settings/user-role",
+            permissions: { view: true, update: true },
+          },
+          {
+            key: "settings-veterinarias",
+            title: "Asignar veterinarios",
+            path: "/settings/veterinarians",
+            permissions: { view: true, update: true },
+          },
+                    {
+            key: "settings-working-hours",
+            title: "Asignar horarios",
+            path: "/settings/working-hours",
+            permissions: { view: true, update: true },
+          },
+                              {
+            key: "settings-time-off",
+            title: "Asignar días libres",
+            path: "/settings/time-off",
             permissions: { view: true, update: true },
           },
         ],
@@ -173,15 +191,15 @@ export const adminAccessConfig: RoleSidebarConfig[] = [
         ],
       },
       {
-        key: "consultations",
+        key: "medical-records",
         title: "Fichas clínicas",
         icon: "FileText",
         permissions: { view: true },
         children: [
           {
-            key: "manage-consultations",
+            key: "manage-medical-records",
             title: "Gestionar fichas clínicas",
-            path: "/consultations",
+            path: "/medical-records",
             permissions: { view: true },
           },
         ],
@@ -241,15 +259,15 @@ export const adminAccessConfig: RoleSidebarConfig[] = [
         ],
       },
       {
-        key: "consultations",
+        key: "medical-records",
         title: "Fichas clínicas",
         icon: "FileText",
         permissions: { view: true },
         children: [
           {
-            key: "manage-consultations",
+            key: "manage-medical-records",
             title: "Gestionar fichas clínicas",
-            path: "/consultations",
+            path: "/medical-records",
             permissions: { view: true },
           },
         ],
