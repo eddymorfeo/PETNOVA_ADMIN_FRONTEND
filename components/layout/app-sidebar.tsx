@@ -11,7 +11,7 @@ import {
   UserRound,
   Users,
   ShieldCheck,
-  BadgeCheck
+  BadgeCheck,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -44,7 +44,6 @@ export function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
-
   const session = React.useMemo(() => getAdminSessionFromStorage(), []);
   const roleCode = getPrimaryRoleCode(session);
 
@@ -67,14 +66,14 @@ export function AppSidebar({
       className="border-r border-slate-200/80 bg-gradient-to-b from-white via-slate-50 to-slate-100/90"
       {...props}
     >
-      <div className="px-4 pb-3 pt-4">
-        <div className="rounded-2xl border border-slate-200/80 bg-white/90 px-3 py-3 shadow-sm backdrop-blur">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-sm">
+      <div className="px-4 pb-3 pt-4 transition-all duration-200 group-data-[collapsible=icon]:px-2">
+        <div className="rounded-2xl border border-slate-200/80 bg-white/90 px-3 py-3 shadow-sm backdrop-blur transition-all duration-200 group-data-[collapsible=icon]:rounded-2xl group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:py-2">
+          <div className="flex items-center gap-3 transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-sky-500 text-white shadow-sm transition-all duration-200 group-data-[collapsible=icon]:h-10 group-data-[collapsible=icon]:w-10">
               <ShieldCheck className="size-5" />
             </div>
 
-            <div className="min-w-0">
+            <div className="min-w-0 transition-all duration-200 group-data-[collapsible=icon]:hidden">
               <p className="truncate text-sm font-semibold tracking-tight text-slate-900">
                 PETNOVA ADMIN
               </p>
@@ -86,12 +85,11 @@ export function AppSidebar({
         </div>
       </div>
 
-      <SidebarContent className="px-2">
+      <SidebarContent className="px-2 group-data-[collapsible=icon]:px-1.5">
         <NavMain items={navItems} />
       </SidebarContent>
-      
 
-      <SidebarFooter className="border-t border-slate-200/70 bg-white/60 px-2 py-3 backdrop-blur">
+      <SidebarFooter className="border-t border-slate-200/70 bg-white/60 px-2 py-3 backdrop-blur group-data-[collapsible=icon]:px-1.5">
         <NavUser user={user} />
       </SidebarFooter>
 

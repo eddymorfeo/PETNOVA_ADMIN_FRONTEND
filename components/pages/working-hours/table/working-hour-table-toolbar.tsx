@@ -25,10 +25,10 @@ export function WorkingHourTableToolbar({
         <Input
           placeholder="Filtrar horarios..."
           value={
-            (table.getColumn("veterinarian_name")?.getFilterValue() as string) ?? ""
+            (table.getColumn("full_name")?.getFilterValue() as string) ?? ""
           }
           onChange={(event) =>
-            table.getColumn("veterinarian_name")?.setFilterValue(event.target.value)
+            table.getColumn("full_name")?.setFilterValue(event.target.value)
           }
           className="h-11 rounded-xl border-slate-200 bg-white pl-10 shadow-none"
         />
