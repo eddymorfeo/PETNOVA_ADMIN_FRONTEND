@@ -11,14 +11,14 @@ import {
   getAdminSessionFromStorage,
 } from "@/lib/auth/admin-session";
 import type {
+  AccountRole,
   AccountUser,
-  AuthenticatedAccountSession,
   UpdateAccountPayload,
 } from "@/types/account/account.type";
 
 export function useAccount() {
   const [account, setAccount] = useState<AccountUser | null>(null);
-  const [roles, setRoles] = useState<AuthenticatedAccountSession["roles"]>([]);
+  const [roles, setRoles] = useState<AccountRole[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isMutating, setIsMutating] = useState(false);
 
@@ -52,13 +52,8 @@ export function useAccount() {
       try {
         const updatedAccount = await updateAuthenticatedAccount(account.id, payload);
 
-        const mergedAccount: AccountUser = {
-          ...account,
-          ...updatedAccount,
-        };
-
-        setAccount(mergedAccount);
-        syncAccountToStorage(mergedAccount, roles);
+        setAccount(updatedAccount);
+        syncAccountToStorage(updatedAccount, roles);
       } finally {
         setIsMutating(false);
       }
@@ -75,10 +70,7 @@ export function useAccount() {
   };
 }
 
-function syncAccountToStorage(
-  account: AccountUser,
-  roles: AuthenticatedAccountSession["roles"],
-): void {
+function syncAccountToStorage(account: AccountUser, roles: AccountRole[]): void {
   if (typeof window === "undefined") {
     return;
   }

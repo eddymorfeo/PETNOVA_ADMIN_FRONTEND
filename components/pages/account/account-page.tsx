@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   UserCircle2,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import { useAccount } from "@/hooks/account/use-account";
 import {
@@ -51,13 +52,24 @@ export function AccountPage() {
   }, [account, form]);
 
   const handleSubmit = form.handleSubmit(async (values: AccountSchemaData) => {
-    await handleUpdateAccount(mapAccountFormToPayload(values));
+    try {
+      await handleUpdateAccount(mapAccountFormToPayload(values));
 
-    form.reset({
-      ...values,
-      password: "",
-      confirmPassword: "",
-    });
+      form.reset({
+        ...values,
+        password: "",
+        confirmPassword: "",
+      });
+
+      toast.success("Los datos de tu cuenta se actualizaron correctamente.");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "No fue posible actualizar los datos de la cuenta.";
+
+      toast.error(errorMessage);
+    }
   });
 
   const errors = form.formState.errors;
@@ -66,10 +78,6 @@ export function AccountPage() {
     <section className="space-y-6 p-6 md:p-8">
       <div className="flex flex-col gap-4">
         <div>
-          <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-400">
-            Cuenta
-          </p>
-
           <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
             Mi cuenta
           </h1>

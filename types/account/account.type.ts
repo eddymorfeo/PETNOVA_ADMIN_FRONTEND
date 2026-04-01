@@ -37,6 +37,19 @@ export type AccountUser = {
   updatedAt?: string | null;
 };
 
+export type AccountUserApi = {
+  id: string;
+  username: string;
+  email: string;
+  full_name: string;
+  phone?: string | null;
+  is_active?: boolean;
+  created_by?: string | null;
+  updated_by?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+};
+
 export type AuthenticatedAccountSession = {
   user: AccountUser;
   roles: AccountRole[];
@@ -61,4 +74,4 @@ export type UpdateAccountPayload = {
 };
 
 export type AuthenticatedUserResponse = ApiResponse<AuthenticatedAccountSession>;
-export type UpdateAccountResponse = ApiResponse<AccountUser>;
+export type UpdateAccountResponse = ApiResponse<AccountUserApi>;

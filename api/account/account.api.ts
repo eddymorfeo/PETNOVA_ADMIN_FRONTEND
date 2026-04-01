@@ -1,11 +1,13 @@
 import { apiClient } from "@/lib/http/api-client";
 import type {
   AccountUser,
+  AccountUserApi,
   AuthenticatedAccountSession,
   AuthenticatedUserResponse,
   UpdateAccountPayload,
   UpdateAccountResponse,
 } from "@/types/account/account.type";
+import { mapAccountApiToAccountUser } from "@/utils/account/account-mappers";
 
 export async function fetchAuthenticatedAccount(): Promise<AuthenticatedAccountSession> {
   const response = await apiClient<AuthenticatedUserResponse>("/auth/users/me", {
@@ -26,5 +28,5 @@ export async function updateAuthenticatedAccount(
     body: JSON.stringify(payload),
   });
 
-  return response.data;
+  return mapAccountApiToAccountUser(response.data as AccountUserApi);
 }

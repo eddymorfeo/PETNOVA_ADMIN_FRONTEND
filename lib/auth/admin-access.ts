@@ -27,7 +27,7 @@ const accountMenuItem: SidebarMenuConfigItem = {
   key: "account",
   title: "Mi cuenta",
   path: "/account",
-  icon: "UserCircle2",
+  icon: "BadgeCheck",
   permissions: {
     view: true,
     update: true,
@@ -122,33 +122,27 @@ export const adminAccessConfig: RoleSidebarConfig[] = [
         permissions: { view: true },
         children: [
           {
-            key: "settings-general",
-            title: "Configuración general",
-            path: "/settings",
-            permissions: { view: true, update: true },
-          },
-          {
             key: "settings-user-roles",
             title: "Asignar roles",
-            path: "/users/roles",
+            path: "/settings/user-role",
             permissions: { view: true, create: true, update: true, delete: true },
           },
           {
             key: "settings-veterinarians",
             title: "Asignar veterinarios",
-            path: "/veterinarians",
+            path: "/settings/veterinarians",
             permissions: { view: true, create: true, update: true, delete: true },
           },
           {
             key: "settings-working-hours",
             title: "Asignar horarios",
-            path: "/working-hours",
+            path: "/settings/working-hours",
             permissions: { view: true, create: true, update: true, delete: true },
           },
           {
             key: "settings-time-off",
             title: "Asignar días libres",
-            path: "/time-off",
+            path: "/settings/time-off",
             permissions: { view: true, create: true, update: true, delete: true },
           },
         ],

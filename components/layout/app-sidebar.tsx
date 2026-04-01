@@ -11,6 +11,7 @@ import {
   UserRound,
   Users,
   ShieldCheck,
+  BadgeCheck
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -36,6 +37,7 @@ const menuIconMap: Record<string, LucideIcon> = {
   CalendarDays,
   FileText,
   Settings,
+  BadgeCheck,
 };
 
 export function AppSidebar({

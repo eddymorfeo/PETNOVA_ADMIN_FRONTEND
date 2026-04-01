@@ -41,10 +41,6 @@ export function AppointmentsPage() {
     <section className="space-y-6 p-6 md:p-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-400">
-            Administración
-          </p>
-
           <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
             Gestión de citas
           </h1>
