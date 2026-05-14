@@ -23,6 +23,7 @@ import type {
   SpeciesOption,
   UpdatePetPayload,
 } from "@/types/pets/pet.type";
+import { withProcessToast } from "@/lib/feedback/process-toast";
 
 function mapClientToPetClient(client: ClientItem): PetClientOption {
   return {
@@ -153,22 +154,18 @@ export function usePets() {
   const handleCreatePet = useCallback(async (payload: CreatePetPayload) => {
     try {
       setIsMutating(true);
-      await createPet(payload);
-      await refreshPets();
-
-      toast.success("Mascota creada correctamente");
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "No fue posible crear la mascota.";
-
-      await Swal.fire({
-        icon: "error",
-        title: "No se pudo crear la mascota",
-        text: message,
-        confirmButtonColor: "#2563eb",
-      });
-
-      throw error;
+      await withProcessToast(
+        async () => {
+          await createPet(payload);
+          await refreshPets();
+        },
+        {
+          loading: "Creando mascota...",
+          success: "Mascota creada correctamente",
+          successDescription: "La mascota quedó registrada en la ficha del cliente.",
+          error: "No se pudo crear la mascota",
+        },
+      );
     } finally {
       setIsMutating(false);
     }
@@ -177,22 +174,18 @@ export function usePets() {
   const handleUpdatePet = useCallback(async (petId: string, payload: UpdatePetPayload) => {
     try {
       setIsMutating(true);
-      await updatePet(petId, payload);
-      await refreshPets();
-
-      toast.success("Mascota actualizada");
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "No fue posible actualizar la mascota.";
-
-      await Swal.fire({
-        icon: "error",
-        title: "No se pudo actualizar la mascota",
-        text: message,
-        confirmButtonColor: "#2563eb",
-      });
-
-      throw error;
+      await withProcessToast(
+        async () => {
+          await updatePet(petId, payload);
+          await refreshPets();
+        },
+        {
+          loading: "Actualizando mascota...",
+          success: "Mascota actualizada correctamente",
+          successDescription: "Los datos de la mascota fueron guardados.",
+          error: "No se pudo actualizar la mascota",
+        },
+      );
     } finally {
       setIsMutating(false);
     }
@@ -217,20 +210,18 @@ export function usePets() {
 
     try {
       setIsMutating(true);
-      await deletePet(pet.id);
-      await refreshPets();
-
-      toast.success("Mascota desactivada");
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "No fue posible desactivar la mascota.";
-
-      await Swal.fire({
-        icon: "error",
-        title: "No se pudo desactivar la mascota",
-        text: message,
-        confirmButtonColor: "#2563eb",
-      });
+      await withProcessToast(
+        async () => {
+          await deletePet(pet.id);
+          await refreshPets();
+        },
+        {
+          loading: "Desactivando mascota...",
+          success: "Mascota desactivada correctamente",
+          successDescription: `${pet.name} ya no figura como mascota activa.`,
+          error: "No se pudo desactivar la mascota",
+        },
+      );
     } finally {
       setIsMutating(false);
     }

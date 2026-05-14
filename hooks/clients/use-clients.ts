@@ -16,6 +16,7 @@ import type {
   CreateClientPayload,
   UpdateClientPayload,
 } from "@/types/clients/client.type";
+import { withProcessToast } from "@/lib/feedback/process-toast";
 
 export function useClients() {
   const [clients, setClients] = useState<ClientItem[]>([]);
@@ -49,29 +50,21 @@ export function useClients() {
     async (payload: CreateClientPayload) => {
       try {
         setIsMutating(true);
-        const createdClient = await createClient(payload);
 
-        setClients((currentClients) => [createdClient, ...currentClients]);
-
-        toast.success("Cliente creado correctamente", {
-          description: `Se registró a ${createdClient.full_name}.`,
-        });
-
-        return createdClient;
-      } catch (error) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : "No fue posible crear el cliente.";
-
-        await Swal.fire({
-          icon: "error",
-          title: "No se pudo crear el cliente",
-          text: message,
-          confirmButtonColor: "#2563eb",
-        });
-
-        throw error;
+        return await withProcessToast(
+          async () => {
+            const createdClient = await createClient(payload);
+            setClients((currentClients) => [createdClient, ...currentClients]);
+            return createdClient;
+          },
+          {
+            loading: "Creando cliente...",
+            success: "Cliente creado correctamente",
+            successDescription: (client) =>
+              `Se registró a ${client.full_name} en PETNOVA.`,
+            error: "No se pudo crear el cliente",
+          },
+        );
       } finally {
         setIsMutating(false);
       }
@@ -83,33 +76,25 @@ export function useClients() {
     async (clientId: string, payload: UpdateClientPayload) => {
       try {
         setIsMutating(true);
-        const updatedClient = await updateClient(clientId, payload);
 
-        setClients((currentClients) =>
-          currentClients.map((client) =>
-            client.id === clientId ? updatedClient : client,
-          ),
+        return await withProcessToast(
+          async () => {
+            const updatedClient = await updateClient(clientId, payload);
+            setClients((currentClients) =>
+              currentClients.map((client) =>
+                client.id === clientId ? updatedClient : client,
+              ),
+            );
+            return updatedClient;
+          },
+          {
+            loading: "Actualizando cliente...",
+            success: "Cliente actualizado correctamente",
+            successDescription: (client) =>
+              `Los datos de ${client.full_name} fueron guardados.`,
+            error: "No se pudo actualizar el cliente",
+          },
         );
-
-        toast.success("Cliente actualizado", {
-          description: `Se actualizó a ${updatedClient.full_name}.`,
-        });
-
-        return updatedClient;
-      } catch (error) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : "No fue posible actualizar el cliente.";
-
-        await Swal.fire({
-          icon: "error",
-          title: "No se pudo actualizar el cliente",
-          text: message,
-          confirmButtonColor: "#2563eb",
-        });
-
-        throw error;
       } finally {
         setIsMutating(false);
       }
@@ -136,29 +121,25 @@ export function useClients() {
 
     try {
       setIsMutating(true);
-      const deletedClient = await deleteClient(client.id);
 
-      setClients((currentClients) =>
-        currentClients.map((currentClient) =>
-          currentClient.id === client.id ? deletedClient : currentClient,
-        ),
+      await withProcessToast(
+        async () => {
+          const deletedClient = await deleteClient(client.id);
+          setClients((currentClients) =>
+            currentClients.map((currentClient) =>
+              currentClient.id === client.id ? deletedClient : currentClient,
+            ),
+          );
+          return deletedClient;
+        },
+        {
+          loading: "Desactivando cliente...",
+          success: "Cliente desactivado correctamente",
+          successDescription: (deletedClient) =>
+            `${deletedClient.full_name} ya no figura como cliente activo.`,
+          error: "No se pudo desactivar el cliente",
+        },
       );
-
-      toast.success("Cliente desactivado", {
-        description: `${deletedClient.full_name} fue desactivado correctamente.`,
-      });
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "No fue posible desactivar el cliente.";
-
-      await Swal.fire({
-        icon: "error",
-        title: "No se pudo desactivar el cliente",
-        text: message,
-        confirmButtonColor: "#2563eb",
-      });
     } finally {
       setIsMutating(false);
     }

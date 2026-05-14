@@ -16,6 +16,7 @@ import type {
   VeterinarianOption,
 } from "@/types/time-off/time-off.type";
 import { buildTimeOffStats } from "@/utils/time-off/time-off-mappers";
+import { withProcessToast } from "@/lib/feedback/process-toast";
 
 export function useTimeOff() {
   const [timeOffBlocks, setTimeOffBlocks] = useState<TimeOffItem[]>([]);
@@ -48,8 +49,18 @@ export function useTimeOff() {
       setIsMutating(true);
 
       try {
-        await createTimeOff(payload);
-        await loadTimeOffData();
+        await withProcessToast(
+          async () => {
+            await createTimeOff(payload);
+            await loadTimeOffData();
+          },
+          {
+            loading: "Creando bloqueo...",
+            success: "Bloqueo creado correctamente",
+            successDescription: "El horario quedó marcado como no disponible.",
+            error: "No se pudo crear el bloqueo",
+          },
+        );
       } finally {
         setIsMutating(false);
       }
@@ -62,8 +73,18 @@ export function useTimeOff() {
       setIsMutating(true);
 
       try {
-        await updateTimeOff(timeOffId, payload);
-        await loadTimeOffData();
+        await withProcessToast(
+          async () => {
+            await updateTimeOff(timeOffId, payload);
+            await loadTimeOffData();
+          },
+          {
+            loading: "Actualizando bloqueo...",
+            success: "Bloqueo actualizado correctamente",
+            successDescription: "Los cambios del bloqueo fueron guardados.",
+            error: "No se pudo actualizar el bloqueo",
+          },
+        );
       } finally {
         setIsMutating(false);
       }
@@ -76,8 +97,18 @@ export function useTimeOff() {
       setIsMutating(true);
 
       try {
-        await deleteTimeOff(timeOffItem.id);
-        await loadTimeOffData();
+        await withProcessToast(
+          async () => {
+            await deleteTimeOff(timeOffItem.id);
+            await loadTimeOffData();
+          },
+          {
+            loading: "Eliminando bloqueo...",
+            success: "Bloqueo eliminado correctamente",
+            successDescription: "El horario vuelve a estar disponible.",
+            error: "No se pudo eliminar el bloqueo",
+          },
+        );
       } finally {
         setIsMutating(false);
       }

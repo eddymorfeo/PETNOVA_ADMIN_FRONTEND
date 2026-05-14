@@ -4,8 +4,6 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-
 import { WorkingHourRowActions } from "@/components/pages/working-hours/table/working-hour-row-actions";
 import { WorkingHourStatusBadge } from "@/components/pages/working-hours/table/working-hour-status-badge";
 import type { WorkingHourItem } from "@/types/working-hours/working-hour.type";
@@ -25,30 +23,6 @@ export function buildWorkingHourColumns({
   onDelete,
 }: BuildWorkingHourColumnsParams): ColumnDef<WorkingHourItem>[] {
   return [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) =>
-            table.toggleAllPageRowsSelected(Boolean(value))
-          }
-          aria-label="Seleccionar todas las filas"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
-          aria-label="Seleccionar fila"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
     {
       accessorKey: "is_active",
       header: "Estado",

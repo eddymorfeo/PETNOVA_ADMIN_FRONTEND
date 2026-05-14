@@ -4,8 +4,6 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-
 import { TimeOffRowActions } from "@/components/pages/time-off/table/time-off-row-actions";
 import type { TimeOffItem } from "@/types/time-off/time-off.type";
 import { formatTimeOffDate } from "@/utils/time-off/time-off-mappers";
@@ -20,30 +18,6 @@ export function buildTimeOffColumns({
   onDelete,
 }: BuildTimeOffColumnsParams): ColumnDef<TimeOffItem>[] {
   return [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) =>
-            table.toggleAllPageRowsSelected(Boolean(value))
-          }
-          aria-label="Seleccionar todas las filas"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
-          aria-label="Seleccionar fila"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
     {
       accessorKey: "full_name",
       header: ({ column }) => (

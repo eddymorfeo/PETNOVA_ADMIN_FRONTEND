@@ -14,6 +14,7 @@ import type {
   UpdateUserPayload,
   UserItem,
 } from "@/types/users/user.type";
+import { withProcessToast } from "@/lib/feedback/process-toast";
 
 export function useUsers() {
   const [users, setUsers] = useState<UserItem[]>([]);
@@ -47,27 +48,20 @@ export function useUsers() {
     try {
       setIsMutating(true);
 
-      const createdUser = await createUser(payload);
-
-      setUsers((currentUsers) => [createdUser, ...currentUsers]);
-
-      toast.success("Usuario creado correctamente", {
-        description: `Se registró el usuario ${createdUser.full_name}.`,
-      });
-
-      return createdUser;
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "No fue posible crear el usuario.";
-
-      await Swal.fire({
-        icon: "error",
-        title: "No se pudo crear el usuario",
-        text: message,
-        confirmButtonColor: "#4f46e5",
-      });
-
-      throw error;
+      return await withProcessToast(
+        async () => {
+          const createdUser = await createUser(payload);
+          setUsers((currentUsers) => [createdUser, ...currentUsers]);
+          return createdUser;
+        },
+        {
+          loading: "Creando usuario...",
+          success: "Usuario creado correctamente",
+          successDescription: (user) =>
+            `Se registró el acceso de ${user.full_name}.`,
+          error: "No se pudo crear el usuario",
+        },
+      );
     } finally {
       setIsMutating(false);
     }
@@ -78,31 +72,24 @@ export function useUsers() {
       try {
         setIsMutating(true);
 
-        const updatedUser = await updateUser(userId, payload);
-
-        setUsers((currentUsers) =>
-          currentUsers.map((user) => (user.id === userId ? updatedUser : user)),
+        return await withProcessToast(
+          async () => {
+            const updatedUser = await updateUser(userId, payload);
+            setUsers((currentUsers) =>
+              currentUsers.map((user) =>
+                user.id === userId ? updatedUser : user,
+              ),
+            );
+            return updatedUser;
+          },
+          {
+            loading: "Actualizando usuario...",
+            success: "Usuario actualizado correctamente",
+            successDescription: (user) =>
+              `Los datos de ${user.full_name} fueron guardados.`,
+            error: "No se pudo actualizar el usuario",
+          },
         );
-
-        toast.success("Usuario actualizado", {
-          description: `Se actualizó ${updatedUser.full_name}.`,
-        });
-
-        return updatedUser;
-      } catch (error) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : "No fue posible actualizar el usuario.";
-
-        await Swal.fire({
-          icon: "error",
-          title: "No se pudo actualizar el usuario",
-          text: message,
-          confirmButtonColor: "#4f46e5",
-        });
-
-        throw error;
       } finally {
         setIsMutating(false);
       }
@@ -130,29 +117,24 @@ export function useUsers() {
     try {
       setIsMutating(true);
 
-      const deletedUser = await deleteUser(user.id);
-
-      setUsers((currentUsers) =>
-        currentUsers.map((currentUser) =>
-          currentUser.id === user.id ? deletedUser : currentUser,
-        ),
+      await withProcessToast(
+        async () => {
+          const deletedUser = await deleteUser(user.id);
+          setUsers((currentUsers) =>
+            currentUsers.map((currentUser) =>
+              currentUser.id === user.id ? deletedUser : currentUser,
+            ),
+          );
+          return deletedUser;
+        },
+        {
+          loading: "Desactivando usuario...",
+          success: "Usuario desactivado correctamente",
+          successDescription: (deletedUser) =>
+            `${deletedUser.full_name} ya no tiene acceso activo.`,
+          error: "No se pudo desactivar el usuario",
+        },
       );
-
-      toast.success("Usuario desactivado", {
-        description: `${deletedUser.full_name} fue desactivado correctamente.`,
-      });
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "No fue posible desactivar el usuario.";
-
-      await Swal.fire({
-        icon: "error",
-        title: "No se pudo desactivar el usuario",
-        text: message,
-        confirmButtonColor: "#4f46e5",
-      });
     } finally {
       setIsMutating(false);
     }

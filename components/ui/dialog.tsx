@@ -47,19 +47,42 @@ function DialogOverlay({
   )
 }
 
+const isSweetAlertTarget = (target: EventTarget | null) =>
+  target instanceof HTMLElement && Boolean(target.closest(".swal2-container"))
+
+type DialogContentProps = React.ComponentProps<typeof DialogPrimitive.Content> & {
+  showCloseButton?: boolean
+}
+
 function DialogContent({
   className,
   children,
   showCloseButton = true,
+  onInteractOutside,
+  onPointerDownOutside,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content> & {
-  showCloseButton?: boolean
-}) {
+}: DialogContentProps) {
   return (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
         data-slot="dialog-content"
+        onInteractOutside={(event) => {
+          if (isSweetAlertTarget(event.target)) {
+            event.preventDefault()
+            return
+          }
+
+          onInteractOutside?.(event)
+        }}
+        onPointerDownOutside={(event) => {
+          if (isSweetAlertTarget(event.target)) {
+            event.preventDefault()
+            return
+          }
+
+          onPointerDownOutside?.(event)
+        }}
         className={cn(
           "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-6 rounded-xl bg-popover p-6 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-md data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
           className

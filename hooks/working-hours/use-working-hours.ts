@@ -18,6 +18,7 @@ import {
   buildCreateWorkingHourPayloads,
   buildWorkingHourStats,
 } from "@/utils/working-hours/working-hour-mappers";
+import { withProcessToast } from "@/lib/feedback/process-toast";
 
 export function useWorkingHours() {
   const [workingHours, setWorkingHours] = useState<WorkingHourItem[]>([]);
@@ -50,13 +51,30 @@ export function useWorkingHours() {
       setIsMutating(true);
 
       try {
-        const createPayloads = buildCreateWorkingHourPayloads(payload);
+        await withProcessToast(
+          async () => {
+            const createPayloads = buildCreateWorkingHourPayloads(payload);
 
-        for (const createPayload of createPayloads) {
-          await createWorkingHour(createPayload);
-        }
+            for (const createPayload of createPayloads) {
+              await createWorkingHour(createPayload);
+            }
 
-        await loadWorkingHourData();
+            await loadWorkingHourData();
+            return createPayloads.length;
+          },
+          {
+            loading: "Creando horario...",
+            success: (count) =>
+              count === 1
+                ? "Horario creado correctamente"
+                : "Horarios creados correctamente",
+            successDescription: (count) =>
+              count === 1
+                ? "Se registró el horario seleccionado."
+                : `Se registraron ${count} horarios seleccionados.`,
+            error: "No se pudo crear el horario",
+          },
+        );
       } finally {
         setIsMutating(false);
       }
@@ -72,43 +90,53 @@ export function useWorkingHours() {
       setIsMutating(true);
 
       try {
-        const selectedWeekdays = [...payload.weekdays];
-        const firstWeekday = selectedWeekdays[0];
-        const additionalWeekdays = selectedWeekdays.slice(1);
+        await withProcessToast(
+          async () => {
+            const selectedWeekdays = [...payload.weekdays];
+            const firstWeekday = selectedWeekdays[0];
+            const additionalWeekdays = selectedWeekdays.slice(1);
 
-        await updateWorkingHour(currentWorkingHour.id, {
-          veterinarianId: payload.veterinarianId,
-          weekday: firstWeekday,
-          startTime: payload.startTime,
-          endTime: payload.endTime,
-          slotMinutes: payload.slotMinutes,
-          isActive: payload.isActive,
-        });
+            await updateWorkingHour(currentWorkingHour.id, {
+              veterinarianId: payload.veterinarianId,
+              weekday: firstWeekday,
+              startTime: payload.startTime,
+              endTime: payload.endTime,
+              slotMinutes: payload.slotMinutes,
+              isActive: payload.isActive,
+            });
 
-        for (const weekday of additionalWeekdays) {
-          const alreadyExists = workingHours.some(
-            (item) =>
-              item.id !== currentWorkingHour.id &&
-              item.veterinarian_id === payload.veterinarianId &&
-              item.weekday === weekday &&
-              normalizeTime(item.start_time) === payload.startTime &&
-              normalizeTime(item.end_time) === payload.endTime,
-          );
+            for (const weekday of additionalWeekdays) {
+              const alreadyExists = workingHours.some(
+                (item) =>
+                  item.id !== currentWorkingHour.id &&
+                  item.veterinarian_id === payload.veterinarianId &&
+                  item.weekday === weekday &&
+                  normalizeTime(item.start_time) === payload.startTime &&
+                  normalizeTime(item.end_time) === payload.endTime,
+              );
 
-          if (alreadyExists) {
-            continue;
-          }
+              if (alreadyExists) {
+                continue;
+              }
 
-          await createWorkingHour({
-            veterinarianId: payload.veterinarianId,
-            weekday,
-            startTime: payload.startTime,
-            endTime: payload.endTime,
-            slotMinutes: payload.slotMinutes,
-          });
-        }
+              await createWorkingHour({
+                veterinarianId: payload.veterinarianId,
+                weekday,
+                startTime: payload.startTime,
+                endTime: payload.endTime,
+                slotMinutes: payload.slotMinutes,
+              });
+            }
 
-        await loadWorkingHourData();
+            await loadWorkingHourData();
+          },
+          {
+            loading: "Actualizando horario...",
+            success: "Horario actualizado correctamente",
+            successDescription: "Los cambios del horario fueron guardados.",
+            error: "No se pudo actualizar el horario",
+          },
+        );
       } finally {
         setIsMutating(false);
       }
@@ -121,8 +149,18 @@ export function useWorkingHours() {
       setIsMutating(true);
 
       try {
-        await deleteWorkingHour(workingHour.id);
-        await loadWorkingHourData();
+        await withProcessToast(
+          async () => {
+            await deleteWorkingHour(workingHour.id);
+            await loadWorkingHourData();
+          },
+          {
+            loading: "Eliminando horario...",
+            success: "Horario eliminado correctamente",
+            successDescription: "El horario ya no estará disponible.",
+            error: "No se pudo eliminar el horario",
+          },
+        );
       } finally {
         setIsMutating(false);
       }

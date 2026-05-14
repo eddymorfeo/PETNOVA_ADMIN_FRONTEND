@@ -16,6 +16,7 @@ import type {
   UserRoleUserOption,
 } from "@/types/user-role/user-role-type";
 import { buildUserRoleStats } from "@/utils/user-role/user-role-mappers";
+import { withProcessToast } from "@/lib/feedback/process-toast";
 
 export function useUserRole() {
   const [userRoles, setUserRoles] = useState<UserRoleItem[]>([]);
@@ -52,8 +53,18 @@ export function useUserRole() {
       setIsMutating(true);
 
       try {
-        await createUserRoleAssignment(payload);
-        await loadUserRoleData();
+        await withProcessToast(
+          async () => {
+            await createUserRoleAssignment(payload);
+            await loadUserRoleData();
+          },
+          {
+            loading: "Asignando rol...",
+            success: "Rol asignado correctamente",
+            successDescription: "El usuario recibió el rol seleccionado.",
+            error: "No se pudo asignar el rol",
+          },
+        );
       } finally {
         setIsMutating(false);
       }
@@ -66,12 +77,22 @@ export function useUserRole() {
       setIsMutating(true);
 
       try {
-        await deleteUserRoleAssignment({
-          userId: userRole.user_id,
-          roleId: userRole.role_id,
-        });
+        await withProcessToast(
+          async () => {
+            await deleteUserRoleAssignment({
+              userId: userRole.user_id,
+              roleId: userRole.role_id,
+            });
 
-        await loadUserRoleData();
+            await loadUserRoleData();
+          },
+          {
+            loading: "Eliminando asignación...",
+            success: "Asignación eliminada correctamente",
+            successDescription: "El rol fue retirado del usuario.",
+            error: "No se pudo eliminar la asignación",
+          },
+        );
       } finally {
         setIsMutating(false);
       }

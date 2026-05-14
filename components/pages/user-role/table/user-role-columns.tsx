@@ -4,8 +4,6 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-
 import { UserRoleRowActions } from "@/components/pages/user-role/table/user-role-row-actions";
 import type { UserRoleItem } from "@/types/user-role/user-role-type";
 import { formatUserRoleDate } from "@/utils/user-role/user-role-mappers";
@@ -18,30 +16,6 @@ export function buildUserRoleColumns({
   onDelete,
 }: BuildUserRoleColumnsParams): ColumnDef<UserRoleItem>[] {
   return [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) =>
-            table.toggleAllPageRowsSelected(Boolean(value))
-          }
-          aria-label="Seleccionar todas las filas"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
-          aria-label="Seleccionar fila"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
     {
       accessorKey: "full_name",
       header: ({ column }) => (

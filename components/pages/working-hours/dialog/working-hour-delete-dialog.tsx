@@ -47,7 +47,7 @@ export function WorkingHourDeleteDialog({
 
         <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
           <p className="text-sm font-medium text-slate-900">
-            {workingHour.veterinarian_name || "Veterinario"}
+            {workingHour.full_name || "Veterinario"}
           </p>
           <p className="text-sm text-slate-500">
             {getWeekdayLabel(workingHour.weekday)} · {normalizeTimeValue(workingHour.start_time)} - {normalizeTimeValue(workingHour.end_time)}

@@ -4,8 +4,6 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-
 import { AppointmentsRowActions } from "@/components/pages/appointments/table/appointments-row-actions";
 import { AppointmentsStatusBadge } from "@/components/pages/appointments/table/appointments-status-badge";
 import type { AppointmentItem } from "@/types/appointments/appointment-type";
@@ -29,28 +27,6 @@ export function buildAppointmentsColumns({
   onCancel,
 }: BuildAppointmentsColumnsParams): ColumnDef<AppointmentItem>[] {
   return [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(Boolean(value))}
-          aria-label="Seleccionar todas las filas"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
-          aria-label="Seleccionar fila"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
     {
       accessorKey: "status",
       header: "Estado",

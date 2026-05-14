@@ -15,7 +15,10 @@ import { fetchVeterinarians } from "@/api/appointments/appointments.api";
 import { fetchClients } from "@/api/clients/clients.api";
 import { fetchPets } from "@/api/pets/pets.api";
 
-import type { AppointmentItem, VeterinarianOption } from "@/types/appointments/appointment-type";
+import type {
+  AppointmentItem,
+  VeterinarianOption,
+} from "@/types/appointments/appointment-type";
 import type { ClientItem } from "@/types/clients/client.type";
 import type {
   ConsultationItem,
@@ -23,6 +26,7 @@ import type {
   UpdateConsultationPayload,
 } from "@/types/medical-records/medical-record.type";
 import type { PetItem } from "@/types/pets/pet.type";
+import { withProcessToast } from "@/lib/feedback/process-toast";
 
 export function useMedicalRecords() {
   const [consultations, setConsultations] = useState<ConsultationItem[]>([]);
@@ -78,24 +82,19 @@ export function useMedicalRecords() {
     async (payload: CreateConsultationPayload) => {
       try {
         setIsMutating(true);
-        await createConsultation(payload);
-        await loadMedicalRecords();
 
-        toast.success("Ficha clínica creada correctamente");
-      } catch (error) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : "No fue posible crear la ficha clínica.";
-
-        await Swal.fire({
-          icon: "error",
-          title: "No se pudo crear la ficha clínica",
-          text: message,
-          confirmButtonColor: "#2563eb",
-        });
-
-        throw error;
+        await withProcessToast(
+          async () => {
+            await createConsultation(payload);
+            await loadMedicalRecords();
+          },
+          {
+            loading: "Creando ficha clínica...",
+            success: "Ficha clínica creada correctamente",
+            successDescription: "El registro clínico quedó guardado.",
+            error: "No se pudo crear la ficha clínica",
+          },
+        );
       } finally {
         setIsMutating(false);
       }
@@ -107,24 +106,19 @@ export function useMedicalRecords() {
     async (consultationId: string, payload: UpdateConsultationPayload) => {
       try {
         setIsMutating(true);
-        await updateConsultation(consultationId, payload);
-        await loadMedicalRecords();
 
-        toast.success("Ficha clínica actualizada");
-      } catch (error) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : "No fue posible actualizar la ficha clínica.";
-
-        await Swal.fire({
-          icon: "error",
-          title: "No se pudo actualizar la ficha clínica",
-          text: message,
-          confirmButtonColor: "#2563eb",
-        });
-
-        throw error;
+        await withProcessToast(
+          async () => {
+            await updateConsultation(consultationId, payload);
+            await loadMedicalRecords();
+          },
+          {
+            loading: "Actualizando ficha clínica...",
+            success: "Ficha clínica actualizada correctamente",
+            successDescription: "Los cambios del registro clínico fueron guardados.",
+            error: "No se pudo actualizar la ficha clínica",
+          },
+        );
       } finally {
         setIsMutating(false);
       }
@@ -152,22 +146,19 @@ export function useMedicalRecords() {
 
       try {
         setIsMutating(true);
-        await deleteConsultation(consultation.id);
-        await loadMedicalRecords();
 
-        toast.success("Ficha clínica eliminada");
-      } catch (error) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : "No fue posible eliminar la ficha clínica.";
-
-        await Swal.fire({
-          icon: "error",
-          title: "No se pudo eliminar la ficha clínica",
-          text: message,
-          confirmButtonColor: "#2563eb",
-        });
+        await withProcessToast(
+          async () => {
+            await deleteConsultation(consultation.id);
+            await loadMedicalRecords();
+          },
+          {
+            loading: "Eliminando ficha clínica...",
+            success: "Ficha clínica eliminada correctamente",
+            successDescription: "El registro clínico fue retirado del historial.",
+            error: "No se pudo eliminar la ficha clínica",
+          },
+        );
       } finally {
         setIsMutating(false);
       }

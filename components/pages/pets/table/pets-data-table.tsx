@@ -40,14 +40,12 @@ export function PetsDataTable({
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
     data,
     columns,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -55,7 +53,6 @@ export function PetsDataTable({
     state: {
       sorting,
       columnVisibility,
-      rowSelection,
     },
   });
 
@@ -87,7 +84,6 @@ export function PetsDataTable({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
                   className="border-slate-200"
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -113,8 +109,8 @@ export function PetsDataTable({
 
       <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="text-sm text-slate-500">
-          {table.getFilteredSelectedRowModel().rows.length} de{" "}
-          {table.getFilteredRowModel().rows.length} fila(s) seleccionadas.
+          Mostrando {table.getRowModel().rows.length} de{" "}
+          {table.getFilteredRowModel().rows.length} registros.
         </div>
 
         <div className="flex items-center gap-2">

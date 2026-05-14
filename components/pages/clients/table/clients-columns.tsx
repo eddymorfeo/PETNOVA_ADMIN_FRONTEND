@@ -4,8 +4,6 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-
 import { ClientsRowActions } from "@/components/pages/clients/table/clients-row-actions";
 import { ClientsStatusBadge } from "@/components/pages/clients/table/clients-status-badge";
 import type { ClientItem } from "@/types/clients/client.type";
@@ -29,30 +27,6 @@ export function buildClientsColumns({
   onDelete,
 }: BuildClientsColumnsParams): ColumnDef<ClientItem>[] {
   return [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) =>
-            table.toggleAllPageRowsSelected(Boolean(value))
-          }
-          aria-label="Seleccionar todas las filas"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
-          aria-label="Seleccionar fila"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
     {
       accessorKey: "is_active",
       header: "Estado",

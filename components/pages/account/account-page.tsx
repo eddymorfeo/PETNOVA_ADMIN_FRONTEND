@@ -10,9 +10,9 @@ import {
   ShieldCheck,
   UserCircle2,
 } from "lucide-react";
-import { toast } from "sonner";
 
 import { useAccount } from "@/hooks/account/use-account";
+import { withProcessToast } from "@/lib/feedback/process-toast";
 import {
   accountSchema,
   type AccountSchemaData,
@@ -52,24 +52,23 @@ export function AccountPage() {
   }, [account, form]);
 
   const handleSubmit = form.handleSubmit(async (values: AccountSchemaData) => {
-    try {
-      await handleUpdateAccount(mapAccountFormToPayload(values));
+    await withProcessToast(
+      async () => {
+        await handleUpdateAccount(mapAccountFormToPayload(values));
 
-      form.reset({
-        ...values,
-        password: "",
-        confirmPassword: "",
-      });
-
-      toast.success("Los datos de tu cuenta se actualizaron correctamente.");
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "No fue posible actualizar los datos de la cuenta.";
-
-      toast.error(errorMessage);
-    }
+        form.reset({
+          ...values,
+          password: "",
+          confirmPassword: "",
+        });
+      },
+      {
+        loading: "Actualizando cuenta...",
+        success: "Cuenta actualizada correctamente",
+        successDescription: "Tus datos personales fueron guardados.",
+        error: "No fue posible actualizar la cuenta",
+      },
+    );
   });
 
   const errors = form.formState.errors;

@@ -4,8 +4,6 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-
 import { MedicalRecordsRowActions } from "@/components/pages/medical-records/table/medical-record-row-actions";
 import { MedicalRecordsStatusBadge } from "@/components/pages/medical-records/table/medical-record-status-badge";
 import type { ConsultationItem } from "@/types/medical-records/medical-record.type";
@@ -29,28 +27,6 @@ export function buildMedicalRecordsColumns({
   onDelete,
 }: BuildMedicalRecordsColumnsParams): ColumnDef<ConsultationItem>[] {
   return [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(Boolean(value))}
-          aria-label="Seleccionar todas las filas"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
-          aria-label="Seleccionar fila"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
     {
       id: "record_status",
       header: "Estado",

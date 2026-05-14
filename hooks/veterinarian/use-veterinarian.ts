@@ -18,6 +18,7 @@ import type {
   VeterinarianUserOption,
 } from "@/types/veterinarian/veterinarian.type";
 import { buildVeterinarianStats } from "@/utils/veterinarian/veterinarian-mappers";
+import { withProcessToast } from "@/lib/feedback/process-toast";
 
 export function useVeterinarian() {
   const [veterinarians, setVeterinarians] = useState<VeterinarianItem[]>([]);
@@ -54,8 +55,18 @@ export function useVeterinarian() {
       setIsMutating(true);
 
       try {
-        await createVeterinarian(payload);
-        await loadVeterinarianData();
+        await withProcessToast(
+          async () => {
+            await createVeterinarian(payload);
+            await loadVeterinarianData();
+          },
+          {
+            loading: "Creando veterinario...",
+            success: "Veterinario creado correctamente",
+            successDescription: "El profesional quedó disponible en el sistema.",
+            error: "No se pudo crear el veterinario",
+          },
+        );
       } finally {
         setIsMutating(false);
       }
@@ -68,8 +79,18 @@ export function useVeterinarian() {
       setIsMutating(true);
 
       try {
-        await updateVeterinarian(veterinarianId, payload);
-        await loadVeterinarianData();
+        await withProcessToast(
+          async () => {
+            await updateVeterinarian(veterinarianId, payload);
+            await loadVeterinarianData();
+          },
+          {
+            loading: "Actualizando veterinario...",
+            success: "Veterinario actualizado correctamente",
+            successDescription: "Los datos del profesional fueron guardados.",
+            error: "No se pudo actualizar el veterinario",
+          },
+        );
       } finally {
         setIsMutating(false);
       }
@@ -82,8 +103,18 @@ export function useVeterinarian() {
       setIsMutating(true);
 
       try {
-        await deleteVeterinarian(veterinarian.id);
-        await loadVeterinarianData();
+        await withProcessToast(
+          async () => {
+            await deleteVeterinarian(veterinarian.id);
+            await loadVeterinarianData();
+          },
+          {
+            loading: "Desactivando veterinario...",
+            success: "Veterinario desactivado correctamente",
+            successDescription: "El profesional ya no figura como activo.",
+            error: "No se pudo desactivar el veterinario",
+          },
+        );
       } finally {
         setIsMutating(false);
       }

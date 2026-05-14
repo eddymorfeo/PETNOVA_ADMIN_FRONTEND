@@ -34,13 +34,13 @@ type NavMainItem = {
 };
 
 const activeItemClassName =
-  "h-11 rounded-xl border border-sky-100 bg-gradient-to-r from-sky-50 via-blue-50 to-cyan-50 text-sky-700 shadow-[0_8px_20px_-16px_rgba(59,130,246,0.35)] transition-all duration-200 hover:from-sky-50 hover:via-blue-50 hover:to-cyan-50 hover:text-sky-700";
+  "h-11 rounded-xl border border-sky-100 bg-gradient-to-r from-sky-50 via-blue-50 to-cyan-50 text-sky-800 shadow-[0_8px_20px_-16px_rgba(59,130,246,0.35)] transition-all duration-200 hover:from-sky-50 hover:via-blue-50 hover:to-cyan-50 hover:text-sky-800 data-active:text-sky-800";
 
 const inactiveItemClassName =
   "h-11 rounded-xl text-slate-700 transition-all duration-200 hover:bg-white hover:text-slate-950 hover:shadow-sm";
 
 const activeSubItemClassName =
-  "h-9 rounded-lg bg-sky-50 text-sky-700 shadow-sm ring-1 ring-sky-100 transition-all duration-200 hover:bg-sky-50 hover:text-sky-700";
+  "h-9 rounded-lg bg-sky-100 text-sky-900 shadow-sm ring-1 ring-sky-200 transition-all duration-200 hover:bg-sky-100 hover:text-sky-900 data-active:text-sky-900";
 
 const inactiveSubItemClassName =
   "h-9 rounded-lg text-slate-600 transition-all duration-200 hover:bg-white hover:text-slate-950";
@@ -76,7 +76,7 @@ export function NavMain({ items }: { items: NavMainItem[] }) {
                         <item.icon
                           className={
                             item.isActive
-                              ? "size-4 text-sky-700"
+                              ? "size-4 text-sky-800"
                               : "size-4 text-slate-500"
                           }
                         />
@@ -110,7 +110,7 @@ export function NavMain({ items }: { items: NavMainItem[] }) {
                       <item.icon
                         className={
                           item.isActive
-                            ? "size-4 text-sky-700"
+                            ? "size-4 text-sky-800"
                             : "size-4 text-slate-500"
                         }
                       />

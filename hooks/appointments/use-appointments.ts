@@ -29,6 +29,7 @@ import type {
   PetItem,
   SpeciesOption,
 } from "@/types/pets/pet.type";
+import { withProcessToast } from "@/lib/feedback/process-toast";
 
 function mapClientToPetClient(client: ClientItem): PetClientOption {
   return {
@@ -165,22 +166,18 @@ export function useAppointments() {
     async (payload: CreateAppointmentPayload) => {
       try {
         setIsMutating(true);
-        await createAppointment(payload);
-        await refreshAppointmentsData();
-
-        toast.success("Cita creada correctamente");
-      } catch (error) {
-        const message =
-          error instanceof Error ? error.message : "No fue posible crear la cita.";
-
-        await Swal.fire({
-          icon: "error",
-          title: "No se pudo crear la cita",
-          text: message,
-          confirmButtonColor: "#2563eb",
-        });
-
-        throw error;
+        await withProcessToast(
+          async () => {
+            await createAppointment(payload);
+            await refreshAppointmentsData();
+          },
+          {
+            loading: "Creando cita...",
+            success: "Cita creada correctamente",
+            successDescription: "La cita quedó registrada en la agenda.",
+            error: "No se pudo crear la cita",
+          },
+        );
       } finally {
         setIsMutating(false);
       }
@@ -192,24 +189,18 @@ export function useAppointments() {
     async (appointmentId: string, payload: UpdateAppointmentPayload) => {
       try {
         setIsMutating(true);
-        await updateAppointment(appointmentId, payload);
-        await refreshAppointmentsData();
-
-        toast.success("Cita actualizada");
-      } catch (error) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : "No fue posible actualizar la cita.";
-
-        await Swal.fire({
-          icon: "error",
-          title: "No se pudo actualizar la cita",
-          text: message,
-          confirmButtonColor: "#2563eb",
-        });
-
-        throw error;
+        await withProcessToast(
+          async () => {
+            await updateAppointment(appointmentId, payload);
+            await refreshAppointmentsData();
+          },
+          {
+            loading: "Actualizando cita...",
+            success: "Cita actualizada correctamente",
+            successDescription: "Los cambios de la cita fueron guardados.",
+            error: "No se pudo actualizar la cita",
+          },
+        );
       } finally {
         setIsMutating(false);
       }
@@ -240,20 +231,18 @@ export function useAppointments() {
 
       try {
         setIsMutating(true);
-        await cancelAppointment(appointment.id, result.value);
-        await refreshAppointmentsData();
-
-        toast.success("Cita cancelada");
-      } catch (error) {
-        const message =
-          error instanceof Error ? error.message : "No fue posible cancelar la cita.";
-
-        await Swal.fire({
-          icon: "error",
-          title: "No se pudo cancelar la cita",
-          text: message,
-          confirmButtonColor: "#2563eb",
-        });
+        await withProcessToast(
+          async () => {
+            await cancelAppointment(appointment.id, result.value);
+            await refreshAppointmentsData();
+          },
+          {
+            loading: "Cancelando cita...",
+            success: "Cita cancelada correctamente",
+            successDescription: "La cita ya no figura como agendada.",
+            error: "No se pudo cancelar la cita",
+          },
+        );
       } finally {
         setIsMutating(false);
       }
