@@ -39,7 +39,10 @@ import type {
 } from "@/types/medical-records/medical-record.type";
 import type { PetItem } from "@/types/pets/pet.type";
 
-import { AppointmentSelectorDialog } from "@/components/pages/medical-records/dialog/appointment-selector-dialog";
+import {
+  AppointmentSelectorDialog,
+  formatAppointmentSelectionLabel,
+} from "@/components/pages/medical-records/dialog/appointment-selector-dialog";
 
 type MedicalRecordFormDialogProps = {
   mode: "create" | "edit";
@@ -108,12 +111,22 @@ export function MedicalRecordFormDialog({
     if (!open) return;
 
     if (mode === "edit" && consultation) {
-      form.reset(mapConsultationToFormValues(consultation));
+      const values = mapConsultationToFormValues(consultation);
+      const appointment = appointments.find(
+        (item) => item.id === consultation.appointment_id,
+      );
+
+      form.reset({
+        ...values,
+        appointmentLabel: appointment
+          ? formatAppointmentSelectionLabel(appointment)
+          : values.appointmentLabel,
+      });
       return;
     }
 
     form.reset(defaultValues);
-  }, [consultation, form, mode, open]);
+  }, [appointments, consultation, form, mode, open]);
 
   const handleSubmit = form.handleSubmit(
     async (values: MedicalRecordFormValues) => {
@@ -349,10 +362,14 @@ export function MedicalRecordFormDialog({
             shouldDirty: true,
             shouldTouch: true,
           });
-          form.setValue("appointmentLabel", appointment.id, {
-            shouldDirty: true,
-            shouldTouch: true,
-          });
+          form.setValue(
+            "appointmentLabel",
+            formatAppointmentSelectionLabel(appointment),
+            {
+              shouldDirty: true,
+              shouldTouch: true,
+            },
+          );
           form.setValue("petId", appointment.pet_id ?? "", {
             shouldDirty: true,
             shouldTouch: true,

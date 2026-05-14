@@ -38,6 +38,33 @@ function normalizeText(value: string): string {
     .toLowerCase();
 }
 
+export function formatAppointmentDateTime(appointment: AppointmentItem): string {
+  if (!appointment.starts_at) {
+    return "Fecha no registrada";
+  }
+
+  const startsAt = new Date(appointment.starts_at);
+
+  if (Number.isNaN(startsAt.getTime())) {
+    return "Fecha no registrada";
+  }
+
+  return new Intl.DateTimeFormat("es-CL", {
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(startsAt);
+}
+
+export function formatAppointmentSelectionLabel(
+  appointment: AppointmentItem,
+): string {
+  const dateTime = formatAppointmentDateTime(appointment);
+  const clientName = appointment.client_name || "Cliente sin nombre";
+  const petName = appointment.pet_name || "Mascota sin registrar";
+
+  return `${dateTime} - ${clientName} - ${petName}`;
+}
+
 export function AppointmentSelectorDialog({
   open,
   onOpenChange,
@@ -57,11 +84,15 @@ export function AppointmentSelectorDialog({
       const clientName = normalizeText(appointment.client_name ?? "");
       const petName = normalizeText(appointment.pet_name ?? "");
       const veterinarianName = normalizeText(appointment.veterinarian_name ?? "");
+      const appointmentDateTime = normalizeText(
+        formatAppointmentDateTime(appointment),
+      );
 
       return (
         clientName.includes(normalizedQuery) ||
         petName.includes(normalizedQuery) ||
-        veterinarianName.includes(normalizedQuery)
+        veterinarianName.includes(normalizedQuery) ||
+        appointmentDateTime.includes(normalizedQuery)
       );
     });
   }, [appointments, query]);
@@ -92,6 +123,7 @@ export function AppointmentSelectorDialog({
               <TableHeader className="bg-slate-50/70">
                 <TableRow className="hover:bg-transparent">
                   <TableHead>Cliente</TableHead>
+                  <TableHead>Fecha y hora</TableHead>
                   <TableHead>Mascota</TableHead>
                   <TableHead>Veterinario</TableHead>
                   <TableHead>Tipo</TableHead>
@@ -103,7 +135,7 @@ export function AppointmentSelectorDialog({
                 {filteredAppointments.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={5}
+                      colSpan={6}
                       className="h-24 text-center text-slate-500"
                     >
                       No hay citas para mostrar.
@@ -114,6 +146,9 @@ export function AppointmentSelectorDialog({
                     <TableRow key={appointment.id} className="border-slate-200">
                       <TableCell className="font-medium text-slate-900">
                         {appointment.client_name ?? "-"}
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        {formatAppointmentDateTime(appointment)}
                       </TableCell>
                       <TableCell>{appointment.pet_name ?? "-"}</TableCell>
                       <TableCell>{appointment.veterinarian_name ?? "-"}</TableCell>
